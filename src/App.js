@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 import Home from "./components/Home/Home";
 import axios from "axios";
+import Form from "./components/Form/form";
 
 const apiKey = "0e41f71f411f9cfaf2ff0a6ace672868";
 class App extends Component {
@@ -11,14 +12,17 @@ class App extends Component {
     finalTemp: undefined,
     description: "",
     city: undefined,
-    country: null,
     weather_icon: null,
+    error: false,
   };
 
-  componentDidMount() {
+  weatherDetails = (e) => {
+    e.preventDefault();
+    let city = e.target.elements.city.value;
+    let country = e.target.elements.country.value;
     axios
       .get(
-        `http://api.openweathermap.org/data/2.5/weather?q=London,uk&appid=${apiKey}`
+        `http://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${apiKey}`
       )
       .then((response) => {
         console.log("Hello");
@@ -28,20 +32,22 @@ class App extends Component {
         let weather_icon = this.weatherIconNameById(
           response.data.weather[0].id
         );
-        console.log(weather_icon);
-        console.log(max_temp);
         this.setState({
           maxtemp: max_temp,
           mintemp: min_temp,
           finalTemp: final_temp,
-          city: response.data.name,
-          country: response.data.sys.country,
+          city: `${response.data.name},${response.data.sys.country}`,
           description: response.data.weather[0].description,
           weather_icon: weather_icon,
+          error: false,
         });
-        console.log(response.data);
+      })
+      .catch((error) => {
+        this.setState({
+          error: error.response.data.message,
+        });
       });
-  }
+  };
 
   convertToDegreeCelsius = (temp) => {
     return Math.floor(temp - 273.15);
@@ -72,6 +78,12 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        {this.state.error ? (
+          <span className="alert alert-danger">
+            Enter appropriate city and country!!!
+          </span>
+        ) : null}
+        <Form onSubmit={this.weatherDetails} />
         <Home
           city={this.state.city}
           country={this.state.country}
