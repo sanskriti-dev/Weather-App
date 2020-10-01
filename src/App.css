@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  text-decoration: underline;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
 .App-logo {
@@ -16,6 +19,9 @@
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
+  width: auto;
+  max-width: 550px;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
